@@ -67,24 +67,16 @@ def aplanarImagenes(train, test):
     new_test = []
     for img in train:
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # convertir la imagen a una matriz numpy
-        img_array = np.array(img_gray)
-        # obtener la forma de la matriz numpy
-        shape = img_array.shape
-    
+
         # aplanar la matriz numpy en un vector
-        img_vector = img_array.reshape(shape[0] * shape[1])
+        img_vector = img_gray.ravel()
         new_train.append(img_vector)
         
     for img in test:
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # convertir la imagen a una matriz numpy
-        img_array = np.array(img_gray)
-        # obtener la forma de la matriz numpy
-        shape = img_array.shape
     
         # aplanar la matriz numpy en un vector
-        img_vector = img_array.reshape(shape[0] * shape[1])
+        img_vector = img_gray.ravel()
         new_test.append(img_vector)
         
     return new_train, new_test
@@ -96,8 +88,10 @@ def guardarImatge(name, img):
 if __name__ == "__main__":
     names = ['subnormal', 'positivo', 'negativo']
     path = 'frames/'
-    for i in names:
-        carregarVideo(i)
+    # os.mkdir(path)
+    # for i in names:
+    #    os.mkdir(path+i)
+    #    carregarVideo(i)
         
     x_train, x_test, y_train, y_test = partirDataset(path)
     
@@ -116,12 +110,12 @@ if __name__ == "__main__":
     # # Segmentar la imagen utilizando el umbral de color
     # mask = cv2.inRange(hsv, lower_skin, upper_skin)
     
-    # # Aplicar operaciones morfológicas para eliminar pequeñas áreas
+    # # Aplicar operaciones morfolï¿½gicas para eliminar pequeï¿½as ï¿½reas
     # kernel = np.ones((5,5),np.uint8)
     # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     # mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     
-    # # Detectar los contornos de la región segmentada
+    # # Detectar los contornos de la regiï¿½n segmentada
     # contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     # # Dibujar los contornos en la imagen original
@@ -134,6 +128,7 @@ if __name__ == "__main__":
     model.fit(x_train, y_train)
     predicciones = model.predict(x_test)
     acc = model.score(x_test, y_test)
+    print(acc)
 
 
 
