@@ -11,24 +11,15 @@ import matplotlib.pyplot as plt
 import os
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
+from scipy import signal
 
 
-path = "./mans/ma_subnormal.png"
-
-"""
-img = cv2.imread(path)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-plt.imshow(img)
-plt.show()
-"""
+# Devuelve la imagen en escala de grises
+def llegir_imatge(path):
+	return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY)
 
 
-imagen = cv2.imread(path)
-imagen_gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
-
-
-
-# Imatge és un numpy array d'una imatge en escala de grisos
+# Imatge és un numpy array d'una imatge en escala de grisos uint8
 def contorn(imatge):
 	# Derivada parcial en x
 	dx = cv2.filter2D(imatge, -1, np.array([[-1, 0, 1]]))
@@ -40,5 +31,28 @@ def contorn(imatge):
 	return np.sqrt((dx**2) + (dy**2))
 
 
-a = contorn(imagen_gris)
-plt.imshow(a, cmap='gray')
+
+
+path = "./frames/positivo/IMG_0015.jpg"
+
+# Imagen de Serena
+imagen = llegir_imatge(path)
+plt.imshow(imagen, cmap='gray')
+plt.show()
+# Imagen contorno de Serena
+imagen_contorn = contorn(imagen)
+plt.imshow(imagen_contorn, cmap='gray')
+plt.show()
+
+imagen_contorn = np.uint8(imagen_contorn)
+
+
+
+path2 = "./mans/ma_si.png"
+kernel = llegir_imatge(path2)
+ma = contorn(kernel)
+ma = np.uint8(ma)
+#corr = cv2.filter2D(imagen_contorn, -1, np.array([[-1, 0, 1]]))
+corr = cv2.filter2D(imagen_contorn, -1, ma)
+
+
