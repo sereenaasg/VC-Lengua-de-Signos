@@ -88,14 +88,14 @@ def guardarImatge(name, img):
 if __name__ == "__main__":
 	names = ['subnormal', 'positivo', 'negativo']
 	path = 'frames/'
-	os.mkdir(path)
+	#os.mkdir(path)
 	for i in names:
-		os.mkdir(path+i)
-		carregarVideo(i)
+	#	os.mkdir(path+i)
+	    carregarVideo(i)
 
-    #x_train, x_test, y_train, y_test = partirDataset(path)
+x_train, x_test, y_train, y_test = partirDataset(path)
 
-    #x_train, x_test = aplanarImagenes(x_train, x_test)
+x_train, x_test = aplanarImagenes(x_train, x_test)
 
     # Cargar la imagen
     # img = x_train[0]
@@ -124,11 +124,11 @@ if __name__ == "__main__":
     # # Mostrar la imagen resultante
     # plt.imshow(img)
 
-    # model = KNeighborsClassifier(5)
-    # model.fit(x_train, y_train)
-    # predicciones = model.predict(x_test)
-    # acc = model.score(x_test, y_test)
-    # print(acc)
+model = KNeighborsClassifier(5)
+model.fit(x_train, y_train)
+predicciones = model.predict(x_test)
+acc = model.score(x_test, y_test)
+print(acc)
 
 
 

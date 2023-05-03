@@ -2,43 +2,48 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import os
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import svm
+from sklearn.metrics import f1_score
+from skimage.feature import hog
 
 x_image = []
-y_label = ['no', 'si', 'subnormal']
+x_hog = []
+etiquetas = []
+data_path = 'mans'
+labels = os.listdir(data_path)
 
-for file in os.listdir('mans'):
-    filename = os.path.join('mans', file)
-    print(filename)
-    img = cv2.imread(filename, 0)
+for dirname in labels:
+  filepath = os.path.join(data_path, dirname)
+  for file in os.listdir(filepath):
+    filename = os.path.join(filepath, file)
 
-    edges = cv2.Canny(img,100,200)
+    image = cv2.imread(filename)
+    image = cv2.resize(image, (300,300))
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Initiate ORB detector
-    orb = cv2.ORB_create()
-    # find the keypoints with ORB
-    kp = orb.detect(edges,None)
-    # compute the descriptors with ORB
-    kp, des = orb.compute(edges, kp)
-    x_image.append(des)
-    # draw only keypoints location,not size and orientation
-    img2 = cv2.drawKeypoints(img, kp, None, color=(0,255,0), flags=0)
+    edges = cv2.Canny(image,100,200)
+    x_image.append(edges.ravel())
+    etiquetas.append(dirname)
 
-x_image_features = np.vstack(x_image)
-print(x_image_features.shape)
+    # Find HOG features
+    fd, hog_image = hog(edges, orientations=9, pixels_per_cell=(8, 8),
+                	cells_per_block=(2, 2), visualize=True)
+    x_hog.append(fd)
 
-scaler = MinMaxScaler(feature_range=(0,1))
-x_image_scaled = scaler.fit_transform(x_image_features)
+# KNN I SVM AMB LES IMATGES DE CONTORNS
+x_train, x_test, y_train, y_test = train_test_split(x_hog, etiquetas, test_size=0.2, random_state=42)
+model = KNeighborsClassifier(2)
+model.fit(x_train, y_train)
+predicciones = model.predict(x_test)
+acc = model.score(x_test, y_test)
+f1 = f1_score(y_test, predicciones, average='micro')
+print('Knn accuracy: '+str(acc)+ ' f1: ' + str(f1))
 
-# Using KMeans to compute centroids to build bag of visual words,n_clusters = 3, 
-kmeans = KMeans(n_clusters=3, random_state=0).fit(x_image_scaled)
-y_kmeans = kmeans.predict(x_image_scaled)
-
-plt.scatter(x_image_scaled[:, 0], x_image_scaled[:, 1], c=y_kmeans, s=50, cmap='viridis')
-
-centers = kmeans.cluster_centers_
-plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
-plt.show()
-# Como que no queda muy bien no?
+clf = svm.SVC()
+clf.fit(x_train, y_train)
+preds = clf.predict(x_test)
+f1 = f1_score(y_test, predicciones, average='micro')
+print('SVM f1-score: ' + str(f1))
 
