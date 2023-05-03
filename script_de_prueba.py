@@ -14,6 +14,8 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy import signal
 import scipy
 
+
+
 # Devuelve la imagen en escala de grises
 def llegir_imatge(path):
 	return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY)
@@ -49,6 +51,35 @@ def flood_fill(field, x ,y, old, new):
     flood_fill(field, x, y+1, old, new)
     flood_fill(field, x, y-1, old, new)
 
+def flood_fill2(field, x ,y, old, new):
+	if x < 0 or x >= len(field[0]) or y < 0 or y >= len(field):
+		return
+	stack = []
+	stack.append([x,y])
+	sz = field.shape
+	visits = np.zeros(sz, dtype=int)
+	while (stack): # while stack not void
+		i, j = stack.pop()
+		visits[i][j] = 1
+		# check if the current position equals the old value
+		if field[i][j] != old:
+			continue
+	    # set the current position to the new value
+		field[i][j] = new
+	    # attempt to fill the neighboring positions
+		if i+1 < sz[0]:
+			if visits[i+1][j] == 0:
+				stack.append([i+1,j])
+		if i-1 > 0:
+			if visits[i-1][j] == 0:
+				stack.append([i-1,j])
+		if j+1 < sz[1]:
+			if visits[i][j+1] == 0:
+				stack.append([i,j+1])
+		if j-1 > 0:
+			if visits[i][j-1] == 0:
+				stack.append([i,j-1])
+
 
 path = "./frames/positivo/IMG_0015.jpg"
 
@@ -83,6 +114,7 @@ plt.imshow(erosion, cmap='gray')
 plt.show()
 plt.imshow(dilate, cmap='gray')
 plt.show()
+'''
 
 
 
@@ -95,18 +127,17 @@ im = dilate[:470, y_min:y_max]
 plt.imshow(im, cmap='gray')
 plt.show()
 
-im = im[::4,::4]
+im = im[::1,::1]
 plt.imshow(im, cmap='gray')
 plt.show()
+'''
+flood_fill2(dilate, 0 ,0, 0, 1)
 
-flood_fill(im, 0 ,0, 0, 1)
-flood_fill(im, 117 ,0, 0, 1)
-flood_fill(im, 117 ,89, 0, 1)
-flood_fill(im, 0 ,89, 0, 1)
 
-plt.imshow(im, cmap='gray')
+plt.imshow(dilate, cmap='gray')
 plt.show()
 
+"""
 detector = cv2.SimpleBlobDetector()
 kp = detector.detect(im)
 
@@ -115,7 +146,6 @@ kp = detector.detect(im)
 
 
 
-"""
 # Imagen contorno de Serena
 imagen_contorn = contorn(imagen)
 plt.imshow(imagen_contorn, cmap='gray')
