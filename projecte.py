@@ -86,7 +86,7 @@ def guardarImatge(name, img):
 
 
 if __name__ == "__main__":
-	names = ['subnormal', 'positivo', 'negativo']
+	names = ['tijeras', 'positivo', 'negativo']
 	path = 'frames/'
 	#os.mkdir(path)
 	for i in names:
