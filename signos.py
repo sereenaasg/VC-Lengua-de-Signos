@@ -63,7 +63,7 @@ for dirname in labels:
         )
         x_test.append(fd)
 
-# KNN I SVM AMB LES IMATGES DE CONTORNS
+# KNN I SVM AMB HISTOGRAM OF GRADIENTS
 x_train, y_train = x_hog, etiquetas
 
 model = KNeighborsClassifier(2)
