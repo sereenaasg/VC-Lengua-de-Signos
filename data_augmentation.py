@@ -1,3 +1,4 @@
+''' GENERAR NUEVOS DATOS CON DATA AUGMENTATION'''
 from keras.preprocessing.image import ImageDataGenerator
 from matplotlib import pyplot as plt
 import os

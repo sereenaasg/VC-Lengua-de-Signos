@@ -1,25 +1,8 @@
-""" PRàCTICA 3 """
+""" ALGUNAS FUNCIONES UTILES Y CARGA DEL DATASET """
 
 import os
-import skimage
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-from skimage import data, io, filters, feature, segmentation, measure
-from skimage.io import imread
 import cv2
-
-# from moviepy.editor import ImageSequenceClip
-from scipy.signal import convolve2d, correlate2d, fftconvolve
-from scipy import signal, ndimage
-from PIL import Image, ImageOps
-from scipy.ndimage import shift
-import time
-from mpl_toolkits import mplot3d
-import math
-from sklearn.neighbors import KNeighborsClassifier
-import os
-import numpy as np
 from sklearn.model_selection import train_test_split
 from PIL import Image
 
@@ -89,10 +72,6 @@ def aplanarImagenes(train, test):
     return new_train, new_test
 
 
-def guardarImatge(name, img):
-    skimage.io.imsave(name + ".jpg", img)
-
-
 if __name__ == "__main__":
     names = ["tijeras", "positivo", "negativo"]
     path = "frames/"
@@ -101,39 +80,3 @@ if __name__ == "__main__":
         # 	os.mkdir(path+i)
         carregarVideo(i)
 
-""" x_train, x_test, y_train, y_test = partirDataset(path)
-
-x_train, x_test = aplanarImagenes(x_train, x_test) """
-
-# Cargar la imagen
-# img = x_train[0]
-
-# # Convertir la imagen a espacio de color HSV
-# hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-# # Definir los valores de color de la piel en HSV
-# lower_skin = np.array([20, 20, 70], dtype=np.uint8)
-# upper_skin = np.array([140, 255, 255], dtype=np.uint8)
-
-# # Segmentar la imagen utilizando el umbral de color
-# mask = cv2.inRange(hsv, lower_skin, upper_skin)
-
-# # Aplicar operaciones morfol�gicas para eliminar peque�as �reas
-# kernel = np.ones((5,5),np.uint8)
-# mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-# mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-# # Detectar los contornos de la regi�n segmentada
-# contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-# # Dibujar los contornos en la imagen original
-# plt.contour(mask, colors='r', levels=[0], alpha=0.5)
-
-# # Mostrar la imagen resultante
-# plt.imshow(img)
-
-""" model = KNeighborsClassifier(5)
-model.fit(x_train, y_train)
-predicciones = model.predict(x_test)
-acc = model.score(x_test, y_test)
-print(acc) """
