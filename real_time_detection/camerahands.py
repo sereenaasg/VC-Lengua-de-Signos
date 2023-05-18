@@ -7,7 +7,7 @@ import numpy as np
 import time
 import pandas as pd
 
-model = load_model('smnist.h5')
+model = load_model('model.h5')
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()
@@ -62,7 +62,10 @@ while True:
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
         analysisframe = cv2.resize(analysisframe,(28,28))
 
-
+        preds = model.predict(analysisframe)
+        preds = np.argmax(preds, axis=1)
+        print(preds)
+'''
         nlist = []
         rows,cols = analysisframe.shape
         for i in range(rows):
@@ -78,7 +81,7 @@ while True:
 
         pixeldata = datan.values
         pixeldata = pixeldata / 255
-        pixeldata = pixeldata.reshape(-1,28,28,1)
+        pixeldata = pixeldata.reshape(-1,256,256,1)
         prediction = model.predict(pixeldata)
         predarray = np.array(prediction[0])
         letter_prediction_dict = {letterpred[i]: predarray[i] for i in range(len(letterpred))}
@@ -96,6 +99,7 @@ while True:
             elif value==high3:
                 print("Predicted Character 3: ", key)
                 print('Confidence 3: ', 100*value)
+'''     
         time.sleep(5)
 
     framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

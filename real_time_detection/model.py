@@ -68,4 +68,4 @@ model.summary()
 
 history = model.fit(datagen.flow(x_train,y_train, batch_size = 128) ,epochs = 20 , validation_data = (x_test, y_test) , callbacks = [learning_rate_reduction])
 
-model.save('smnist.h5')
+model.save('model.h5')
