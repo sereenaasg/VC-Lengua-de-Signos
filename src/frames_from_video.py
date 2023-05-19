@@ -25,9 +25,9 @@ def carregarImatges(path):
 
 
 def carregarVideo(name):
-    capture = cv2.VideoCapture(name + ".mp4")
+    capture = cv2.VideoCapture("../data/videos/" + name + ".mp4")
     cont = 0
-    path = "data/frames/" + name + "/"
+    path = "../data/frames/" + name + "/"
 
     while capture.isOpened():
         ret, frame = capture.read()
@@ -74,9 +74,9 @@ def aplanarImagenes(train, test):
 
 if __name__ == "__main__":
     names = ["tijeras", "positivo", "negativo"]
-    path = "data/frames/"
-    # os.mkdir(path)
+    path = "../data/frames/"
+    os.mkdir(path)
     for i in names:
-        # 	os.mkdir(path+i)
+        os.mkdir(path+i)
         carregarVideo(i)
 
