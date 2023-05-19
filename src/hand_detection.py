@@ -99,18 +99,26 @@ def preprocessament(path):
     blur = cv2.GaussianBlur(imagen,(5,5),0)
     ret1,th1 = cv2.threshold(blur,65,255,cv2.THRESH_BINARY)
 
-
+    th1 = np.where(th1 == 255, 0, 255).astype("uint8")
+    
+    
     kernel = np.ones((11, 11), np.uint8)
     erosion = cv2.erode(th1, kernel)
     dilate = cv2.dilate(erosion, kernel)
     image = cv2.morphologyEx(dilate, cv2.MORPH_CLOSE, kernel)
     image = image/255.0
     
+    image = np.where(image == 1, 0, 255).astype("uint8")
     image = crop_black_region(image)
     
 
     image = flood_fill2(image)
     
+    image = np.where(image == 255, 0, 255).astype("uint8")
+    kernel = np.ones((15, 15), np.uint8)
+    image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+    
+    image = np.where(image == 255, 0, 255).astype("uint8")
     plt.imshow(image, cmap='gray')
     plt.show()
     
@@ -120,8 +128,8 @@ def preprocessament(path):
 def get_characterics(image):
     label_img = label(image)
     regions = regionprops(label_img)
-    # fig, ax = plt.subplots()
-    # ax.imshow(image, cmap=plt.cm.gray)
+    fig, ax = plt.subplots()
+    ax.imshow(image, cmap=plt.cm.gray)
 
     index_max_area = 0
     max_area = 0
@@ -141,16 +149,17 @@ def get_characterics(image):
         #         y2 = y0 - math.cos(orientation) * 0.5 * props.axis_major_length
 
 
-        # ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
-        # ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
-        # ax.plot(x0, y0, ".g", markersize=15)
+        ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
+        ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
+        ax.plot(x0, y0, ".g", markersize=15)
 
         minr, minc, maxr, maxc = props.bbox
         bx = (minc, maxc, maxc, minc, minc)
         by = (minr, minr, maxr, maxr, minr)
-        # ax.plot(bx, by, "-b", linewidth=2.5)
-
-    # ax.axis((0, 600, 600, 0))
+        ax.plot(bx, by, "-b", linewidth=2.5)
+    h, w = image.shape
+    ax.axis((0, w, h, 0))
+    plt.show()
     
     ratio = (regions[index_max_area].bbox[2] - regions[index_max_area].bbox[0]) / (
         regions[index_max_area].bbox[3] - regions[index_max_area].bbox[1]
@@ -178,7 +187,8 @@ def modelKNN(x, y):
     print(predicciones)
     print(y_test)
     acc = model.score(x_test, y_test)
-    print(acc) 
+    f1 = f1_score(y_test, predicciones, average="micro")
+    print(acc, f1) 
 
    
 if __name__ == "__main__":
