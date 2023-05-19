@@ -4,20 +4,20 @@ from matplotlib import pyplot as plt
 import os
 
 # Create a new directory to save the augmented images
-augmented_directory = 'data/augmented_data'
+augmented_directory = '../data/augmented_data_v2'
 os.makedirs(augmented_directory, exist_ok=True)
 
 # create image data augmentation generator
 datagen = ImageDataGenerator(horizontal_flip=True, 
                              width_shift_range=0.1, 
                              height_shift_range=0.1, 
-                             brightness_range=[0.2,1.0],
-                             rotation_range=0.5)
+                             brightness_range=[0.5,1.0],
+                             rotation_range=5)
 # prepare iterator
-it = datagen.flow_from_directory('data/mans', batch_size=1)
+it = datagen.flow_from_directory('../data/mans', batch_size=1)
 
 # Generate samples and save the augmented images
-for i in range(len(it.filenames)*3):
+for i in range(len(it.filenames)*5):
     # Generate batch of images
     batch = it.next()
 
