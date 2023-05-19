@@ -97,16 +97,21 @@ def preprocessament(path):
     imagen = llegir_imatge(path)
 
     blur = cv2.GaussianBlur(imagen,(5,5),0)
-    ret1,th1 = cv2.threshold(blur,65,255,cv2.THRESH_BINARY)
+    ret1,th1 = cv2.threshold(blur,30,255,cv2.THRESH_BINARY)
 
     th1 = np.where(th1 == 255, 0, 255).astype("uint8")
     
     
-    kernel = np.ones((11, 11), np.uint8)
+    kernel = np.ones((7, 7), np.uint8)
     erosion = cv2.erode(th1, kernel)
-    dilate = cv2.dilate(erosion, kernel)
-    image = cv2.morphologyEx(dilate, cv2.MORPH_CLOSE, kernel)
+    #dilate = cv2.dilate(th1, kernel)
+    kernel = np.ones((13, 13), np.uint8)
+    image = cv2.morphologyEx(erosion, cv2.MORPH_CLOSE, kernel)
     image = image/255.0
+    
+    plt.imshow(image, cmap='gray')
+    plt.show()
+    
     
     image = np.where(image == 1, 0, 255).astype("uint8")
     image = crop_black_region(image)
@@ -115,7 +120,8 @@ def preprocessament(path):
     image = flood_fill2(image)
     
     image = np.where(image == 255, 0, 255).astype("uint8")
-    kernel = np.ones((15, 15), np.uint8)
+    kernel = np.ones((21, 21), np.uint8)
+    erosion = cv2.erode(th1, kernel)
     image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
     
     image = np.where(image == 255, 0, 255).astype("uint8")
