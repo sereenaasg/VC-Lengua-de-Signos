@@ -29,34 +29,68 @@ def contorn(imatge):
     # Retornem el modul del vector gradient (sqrt(dx^2 + dy^2))
     return np.sqrt((dx**2) + (dy**2))
 
-def flood_fill2(field, x, y, old, new):
-    if x < 0 or x >= len(field[0]) or y < 0 or y >= len(field):
-        return
-    stack = []
-    stack.append([x, y])
-    sz = field.shape
-    visits = np.zeros(sz, dtype=int)
-    while stack:  # while stack not void
-        i, j = stack.pop()
-        visits[i][j] = 1
-        # check if the current position equals the old value
-        if field[i][j] != old:
-            continue
-            # set the current position to the new value
-        field[i][j] = new
-        # attempt to fill the neighboring positions
-        if i + 1 < sz[0]:
-            if visits[i + 1][j] == 0:
-                stack.append([i + 1, j])
-        if i - 1 > 0:
-            if visits[i - 1][j] == 0:
-                stack.append([i - 1, j])
-        if j + 1 < sz[1]:
-            if visits[i][j + 1] == 0:
-                stack.append([i, j + 1])
-        if j - 1 > 0:
-            if visits[i][j - 1] == 0:
-                stack.append([i, j - 1])
+def flood_fill2(imagen):
+    # Obtener las dimensiones de la imagen
+    filas, columnas = imagen.shape
+    
+    # Encontrar el límite izquierdo y derecho de cada fila
+    limite_izquierdo = np.zeros(filas, dtype=int)
+    limite_derecho = np.zeros(filas, dtype=int)
+    
+    # Encontrar el límite izquierdo y derecho en cada fila
+    for i in range(filas):
+        for j in range(columnas):
+            if imagen[i, j] == 0:
+                break
+            else:
+                imagen[i,j] = 0
+        
+        for j in range(columnas-1, -1, -1):
+            if imagen[i, j] == 0:
+                break
+            else:
+                imagen[i, j] = 0
+    
+    return imagen
+                
+def crop_black_region(imagen):
+    # Obtener las dimensiones de la imagen
+    filas, columnas = imagen.shape
+    
+    # Encontrar los límites superior, inferior, izquierdo y derecho
+    limite_superior = None
+    limite_inferior = None
+    limite_izquierdo = None
+    limite_derecho = None
+    
+    # Encontrar el límite superior
+    for i in range(filas):
+        if limite_superior is None and np.any(imagen[i] == 0):
+            limite_superior = i
+            break
+    
+    # Encontrar el límite inferior
+    for i in range(filas-1, -1, -1):
+        if limite_inferior is None and np.any(imagen[i] == 0):
+            limite_inferior = i
+            break
+    
+    # Encontrar el límite izquierdo
+    for j in range(columnas):
+        if limite_izquierdo is None and np.any(imagen[:, j] == 0):
+            limite_izquierdo = j
+            break
+    
+    # Encontrar el límite derecho
+    for j in range(columnas-1, -1, -1):
+        if limite_derecho is None and np.any(imagen[:, j] == 0):
+            limite_derecho = j
+            break
+    
+    # Recortar la región negra de la imagen original
+    imagen_recortada = imagen[limite_superior:limite_inferior+1, limite_izquierdo:limite_derecho+1]
+    
+    return imagen_recortada
 
 def preprocessament(path):
 
@@ -71,8 +105,14 @@ def preprocessament(path):
     dilate = cv2.dilate(erosion, kernel)
     image = cv2.morphologyEx(dilate, cv2.MORPH_CLOSE, kernel)
     image = image/255.0
+    
+    image = crop_black_region(image)
+    
 
-    flood_fill2(image, 0, 0, 0, 1)
+    image = flood_fill2(image)
+    
+    plt.imshow(image, cmap='gray')
+    plt.show()
     
     return image
 
@@ -80,8 +120,8 @@ def preprocessament(path):
 def get_characterics(image):
     label_img = label(image)
     regions = regionprops(label_img)
-    fig, ax = plt.subplots()
-    ax.imshow(image, cmap=plt.cm.gray)
+    # fig, ax = plt.subplots()
+    # ax.imshow(image, cmap=plt.cm.gray)
 
     index_max_area = 0
     max_area = 0
@@ -101,16 +141,16 @@ def get_characterics(image):
         #         y2 = y0 - math.cos(orientation) * 0.5 * props.axis_major_length
 
 
-        ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
-        ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
-        ax.plot(x0, y0, ".g", markersize=15)
+        # ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
+        # ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
+        # ax.plot(x0, y0, ".g", markersize=15)
 
         minr, minc, maxr, maxc = props.bbox
         bx = (minc, maxc, maxc, minc, minc)
         by = (minr, minr, maxr, maxr, minr)
-        ax.plot(bx, by, "-b", linewidth=2.5)
+        # ax.plot(bx, by, "-b", linewidth=2.5)
 
-    ax.axis((0, 600, 600, 0))
+    # ax.axis((0, 600, 600, 0))
     
     ratio = (regions[index_max_area].bbox[2] - regions[index_max_area].bbox[0]) / (
         regions[index_max_area].bbox[3] - regions[index_max_area].bbox[1]
@@ -142,7 +182,7 @@ def modelKNN(x, y):
 
    
 if __name__ == "__main__":
-    data_path = "data/frames"
+    data_path = "../data/frames"
     labels = os.listdir(data_path)
     x = []
     y = []
