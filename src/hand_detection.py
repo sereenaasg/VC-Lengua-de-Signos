@@ -104,13 +104,12 @@ def preprocessament(path):
     
     kernel = np.ones((7, 7), np.uint8)
     erosion = cv2.erode(th1, kernel)
-    #dilate = cv2.dilate(th1, kernel)
     kernel = np.ones((13, 13), np.uint8)
     image = cv2.morphologyEx(erosion, cv2.MORPH_CLOSE, kernel)
     image = image/255.0
     
-    plt.imshow(image, cmap='gray')
-    plt.show()
+    # plt.imshow(image, cmap='gray')
+    # plt.show()
     
     
     image = np.where(image == 1, 0, 255).astype("uint8")
@@ -125,8 +124,8 @@ def preprocessament(path):
     image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
     
     image = np.where(image == 255, 0, 255).astype("uint8")
-    plt.imshow(image, cmap='gray')
-    plt.show()
+    # plt.imshow(image, cmap='gray')
+    # plt.show()
     
     return image
 
@@ -165,7 +164,7 @@ def get_characterics(image):
         ax.plot(bx, by, "-b", linewidth=2.5)
     h, w = image.shape
     ax.axis((0, w, h, 0))
-    plt.show()
+    # plt.show()
     
     ratio = (regions[index_max_area].bbox[2] - regions[index_max_area].bbox[0]) / (
         regions[index_max_area].bbox[3] - regions[index_max_area].bbox[1]
@@ -202,69 +201,23 @@ if __name__ == "__main__":
     labels = os.listdir(data_path)
     x = []
     y = []
+    cont = 0
+    path_pre = "../data/preprocessed/"
+    #os.mkdir(path_pre)
     for dirname in labels:
         filepath = os.path.join(data_path, dirname)
         for file in os.listdir(filepath):
             filename = os.path.join(filepath, file)
             image = preprocessament(filename)
+            
+            #plt.imsave("../data/preprocessed/" + "IMG_%04d.jpg" % cont, image)
+            cv2.imwrite(path_pre + "IMG_%04d.jpg" % cont, image)
+
             charac = get_characterics(image)
             x.append(charac)
             y.append(dirname)
+            cont = cont+1
             
     modelKNN(x,y)
     
-''' FUNCIONES ANTIGUAS    
-# def flood_fill(field, x, y, old, new):
-#     # we need the x and y of the start position, the old value,
-#     # and the new value
-#     # the flood fill has 4 parts
-#     # firstly, make sure the x and y are inbounds
-#     if x < 0 or x >= len(field[0]) or y < 0 or y >= len(field):
-#         return
-#     # secondly, check if the current position equals the old value
-#     if field[y][x] != old:
-#         return
 
-#     # thirdly, set the current position to the new value
-#     field[y][x] = new
-#     # fourthly, attempt to fill the neighboring positions
-#     flood_fill(field, x + 1, y, old, new)
-#     flood_fill(field, x - 1, y, old, new)
-#     flood_fill(field, x, y + 1, old, new)
-#     flood_fill(field, x, y - 1, old, new)
-
-# def preprocessament(path):
-#     # Imagen de Serena
-#     imagen = llegir_imatge(path)
-#     # plt.imshow(imagen, cmap="gray")
-#     # plt.show()
-
-#     thr = 65
-#     img_thr = np.uint8(imagen < thr)
-
-#     # plt.imshow(img_thr, cmap="gray")
-#     # plt.show()
-
-#     histograma, bins = np.histogram(imagen, bins=255)
-#     bins = bins[:-1].astype(np.uint8)
-#     # plt.plot(bins, histograma)
-#     # plt.show()
-
-#     kernel = np.ones((11, 11), np.uint8)
-#     erosion = cv2.erode(img_thr, kernel)
-#     dilate = cv2.dilate(erosion, kernel)
-
-#     # plt.imshow(erosion, cmap="gray")
-#     # plt.show()
-#     # plt.imshow(dilate, cmap="gray")
-#     # plt.show()
-
-#     flood_fill2(dilate, 0, 0, 0, 1)
-
-#     # plt.imshow(dilate, cmap="gray")
-#     # plt.show()
-
-#     image = np.where(dilate == 1, 0, 255).astype("uint8")
-#     # plt.imshow(image, cmap="gray")
-#     # plt.show()
-#     return image '''

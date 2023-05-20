@@ -35,3 +35,32 @@ for i in range(len(it.filenames)*5):
 
     # Save the augmented image
     plt.imsave(augmented_subdirectory + "\\IMG_%04d.png" % i, image)
+    
+    
+    
+''' Imatges binaritzades '''
+# Create a new directory to save the augmented images
+augmented_directory = '../data/augmented_data_bin'
+os.makedirs(augmented_directory, exist_ok=True)
+
+it = datagen.flow_from_directory('../data/preprocessed', batch_size=1)
+
+# Generate samples and save the augmented images
+for i in range(len(it.filenames)*5):
+    # Generate batch of images
+    batch = it.next()
+
+    # Convert to unsigned integers for viewing
+    image = batch[0][0].astype('uint8')
+
+    # Get the original image's subdirectory and filename
+    if batch[1][0][0] == 1: original_subdirectory = 'negatiu'
+    elif batch[1][0][1] == 1: original_subdirectory = 'positiu'
+    elif batch[1][0][2] == 1: original_subdirectory = 'tijeras'
+
+    # Create the corresponding subdirectory in the augmented directory
+    augmented_subdirectory = os.path.join(augmented_directory, original_subdirectory)
+    os.makedirs(augmented_subdirectory, exist_ok=True)
+
+    # Save the augmented image
+    plt.imsave(augmented_subdirectory + "\\IMG_%04d.png" % i, image)
