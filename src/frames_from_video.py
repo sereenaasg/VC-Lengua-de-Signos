@@ -32,6 +32,7 @@ def carregarVideo(name):
     while capture.isOpened():
         ret, frame = capture.read()
         if ret == True:
+            # Guardar un de cada 5 frames
             if cont % 5 == 0:
                 cv2.imwrite(path + "IMG_%04d.jpg" % cont, frame)
             cont += 1

@@ -95,13 +95,14 @@ def crop_black_region(imagen):
 def preprocessament(path):
 
     imagen = llegir_imatge(path)
-
+    
+    # Suavizar y obtener threshold
     blur = cv2.GaussianBlur(imagen,(5,5),0)
     ret1,th1 = cv2.threshold(blur,30,255,cv2.THRESH_BINARY)
 
     th1 = np.where(th1 == 255, 0, 255).astype("uint8")
     
-    
+    # Eliminar ruido con erosion y close
     kernel = np.ones((7, 7), np.uint8)
     erosion = cv2.erode(th1, kernel)
     kernel = np.ones((13, 13), np.uint8)
@@ -111,13 +112,14 @@ def preprocessament(path):
     # plt.imshow(image, cmap='gray')
     # plt.show()
     
-    
+    # Recortar la region negra de la imagen
     image = np.where(image == 1, 0, 255).astype("uint8")
     image = crop_black_region(image)
     
-
+    # Llenar las esquinas blancas de negro
     image = flood_fill2(image)
     
+    # Eliminar ruido
     image = np.where(image == 255, 0, 255).astype("uint8")
     kernel = np.ones((21, 21), np.uint8)
     erosion = cv2.erode(th1, kernel)
@@ -131,11 +133,13 @@ def preprocessament(path):
 
 
 def get_characterics(image):
+    # Detectar Blobs
     label_img = label(image)
     regions = regionprops(label_img)
     fig, ax = plt.subplots()
     ax.imshow(image, cmap=plt.cm.gray)
 
+    # Coger el Blob de mayor area y encontrar las bounding box
     index_max_area = 0
     max_area = 0
     for index, props in enumerate(regions):
@@ -148,11 +152,6 @@ def get_characterics(image):
         y1 = y0 - math.sin(orientation) * 0.5 * props.minor_axis_length
         x2 = x0 - math.sin(orientation) * 0.5 * props.major_axis_length
         y2 = y0 - math.cos(orientation) * 0.5 * props.major_axis_length
-        #         x1 = x0 + math.cos(orientation) * 0.5 * props.axis_minor_length
-        #         y1 = y0 - math.sin(orientation) * 0.5 * props.axis_minor_length
-        #         x2 = x0 - math.sin(orientation) * 0.5 * props.axis_major_length
-        #         y2 = y0 - math.cos(orientation) * 0.5 * props.axis_major_length
-
 
         ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
         ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
@@ -166,16 +165,13 @@ def get_characterics(image):
     ax.axis((0, w, h, 0))
     # plt.show()
     
+    # Calcular la relacion alzada-anchura
     ratio = (regions[index_max_area].bbox[2] - regions[index_max_area].bbox[0]) / (
         regions[index_max_area].bbox[3] - regions[index_max_area].bbox[1]
     )
     minr, minc, maxr, maxc = regions[index_max_area].bbox
     area_bbox = (maxr - minr) * (maxc - minc)
     
-    #     ratio = (regions[index_max_area].bbox[2] - regions[index_max_area].bbox[0]) / (
-    #         regions[index_max_area].bbox[3] - regions[index_max_area].bbox[1]
-    #     )
-    #     img_carac = [regions[index_max_area].area, regions[index_max_area].area_bbox, ratio]
 
     img_carac = [regions[index_max_area].area, area_bbox, ratio]
     return img_carac
@@ -210,7 +206,6 @@ if __name__ == "__main__":
             filename = os.path.join(filepath, file)
             image = preprocessament(filename)
             
-            #plt.imsave("../data/preprocessed/" + "IMG_%04d.jpg" % cont, image)
             cv2.imwrite(path_pre + "IMG_%04d.jpg" % cont, image)
 
             charac = get_characterics(image)
