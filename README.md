@@ -7,33 +7,36 @@ This repository contains the source code and datasets used to implement all the 
 ## Structure
 ```
 ├── README.md
+├── Informe.pdf
 ├── data
-    ├── augmented_data_all_v2
-    ├── augmented_data_test
+    ├── augmented_bin_test           # Binary images of hands detected by hand_detection.py 
+    ├── augmented_bin_train     
+    ├── augmented_data_all_v2        # RGB Images of hands taken manually and augmented 
+    ├── augmented_data_test         
     ├── augmented_data_train
-    ├── frames
-    ├── mans
+    ├── augmented_data_test2
+    ├── augmented_data_train2
+    ├── frames                       # frames from videos output of frames_from_video.py
+    ├── mans                         # Hand images
     ├── mans_test
+    ├── MNIST                        # MNIST Sign Language dataset
+    ├── preprocessed                 
     └── videos
 ├── notebooks
     ├── neural_network_tf.ipynb
     ├── neural_network_tf_MNIST.ipynb
     ├── notebook.ipynb
-    └── real_time_detection
-        └── modelMNIST.h5
 ├── real_time_detection
-    ├── camerahands.py               
-    ├── knn.sav
-    ├── link_dataset.txt
-    ├── model.h5
-    ├── model_github.h5
-    ├── smnist.h5
-    └── svm.sav
+    ├── camerahands.py               # Mediapipe hand detection and code to try saved models
+    ├── knn.sav                      # knn model trained with HoG descriptors
+    ├── model.h5                     # CNN model trained with three simple gestures
+    ├── modelMNIST.h5                # CNN model trained with the MNIST dataset
+    └── svm.sav                      # svm model trained with HoG descriptors
 └── src
-    ├── data_augmentation.py
-    ├── frames_from_video.py
-    ├── hand_detection.py
-    └── hog_model.py
+    ├── data_augmentation.py         # Used to generate augmented data
+    ├── frames_from_video.py         # Used to get some frames from input videos
+    ├── hand_detection.py            # Process to detect hands and width/height ratio classifier
+    └── hog_model.py                 # Classifier using HoG descriptors
 ```
 ## Table of Contents
  + [Requirements](#Requirements)
@@ -46,7 +49,6 @@ This repository contains the source code and datasets used to implement all the 
 + numpy
 + sklearn
 + skimage
-## Amazing Contributions
 ## Authors
  + Javier Esmoris Cerezuela
  + Oriol Marión Escudé
