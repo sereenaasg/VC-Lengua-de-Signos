@@ -7,7 +7,8 @@ import numpy as np
 import time
 import pandas as pd
 
-model = load_model('model.h5')
+model = load_model('modelMNIST_aumented.h5')
+mnist = 1
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()
@@ -20,7 +21,9 @@ h, w, c = frame.shape
 
 img_counter = 0
 analysisframe = ''
-letterpred = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y']
+letterpred = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G', 7:'H', 8:'I', 9:'K', 10:'L', 11:'M',
+              12:'N', 13:'O', 14:'P', 15:'Q', 16:'R', 17:'S', 18:'T', 
+              19:'U', 20:'V', 21:'W', 22:'X', 23:'Y'}
 while True:
     _, frame = cap.read()
 
@@ -60,47 +63,27 @@ while True:
 
         #analysisframe = cv2.cvtColor(analysisframe, cv2.COLOR_BGR2GRAY)
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
-        analysisframe = cv2.resize(analysisframe,(256,256))
         
-        preds = model.predict(np.array([analysisframe]))
-        print(preds.shape)
-        preds = np.argmax(preds, axis=1)
-        print(preds)
         
-        # nlist = []
-        # rows,cols = analysisframe.shape
-        # for i in range(rows):
-        #     for j in range(cols):
-        #         k = analysisframe[i,j]
-        #         nlist.append(k)
+        if mnist == 0:
+            analysisframe = cv2.resize(analysisframe,(256,256))
+            preds = model.predict(np.array([analysisframe]))
+            preds = np.argmax(preds, axis=1)
+            if preds == 0:
+                print('Sign Detected: Negativo')
+            elif preds == 1:
+                print('Sign Detected: Positivo')
+            elif preds == 2:
+                print('Sign Detected: Tijeras')
         
-        # datan = pd.DataFrame(nlist).T
-        # colname = []
-        # for val in range(784):
-        #     colname.append(val)
-        # datan.columns = colname
-
-        # pixeldata = datan.values
-        # pixeldata = pixeldata / 255
-        # pixeldata = pixeldata.reshape(-1,256,256,1)
-        # prediction = model.predict(pixeldata)
-        # predarray = np.array(prediction[0])
-        # letter_prediction_dict = {letterpred[i]: predarray[i] for i in range(len(letterpred))}
-        # predarrayordered = sorted(predarray, reverse=True)
-        # high1 = predarrayordered[0]
-        # high2 = predarrayordered[1]
-        # high3 = predarrayordered[2]
-        # for key,value in letter_prediction_dict.items():
-        #     if value==high1:
-        #         print("Predicted Character 1: ", key)
-        #         print('Confidence 1: ', 100*value)
-        #     elif value==high2:
-        #         print("Predicted Character 2: ", key)
-        #         print('Confidence 2: ', 100*value)
-        #     elif value==high3:
-        #         print("Predicted Character 3: ", key)
-        #         print('Confidence 3: ', 100*value)     
-        time.sleep(5)
+        else:
+            analysisframe = cv2.resize(analysisframe,(28,28))
+            preds = model.predict(np.array([analysisframe]))
+            preds = np.argmax(preds, axis=1)
+            print(preds)
+            print('Sign Detected: ' + str(preds) + '==>' + str(letterpred[preds[0]]))
+             
+        time.sleep(3)
 
     framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hands.process(framergb)
