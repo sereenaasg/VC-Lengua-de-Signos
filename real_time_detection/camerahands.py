@@ -7,7 +7,7 @@ import numpy as np
 import time
 import pandas as pd
 
-model = load_model('modelMNIST_aumented.h5')
+model = load_model('modelMNIST.h5')
 mnist = 1
 
 mphands = mp.solutions.hands
@@ -22,8 +22,8 @@ h, w, c = frame.shape
 img_counter = 0
 analysisframe = ''
 letterpred = {0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G', 7:'H', 8:'I', 9:'K', 10:'L', 11:'M',
-              12:'N', 13:'O', 14:'P', 15:'Q', 16:'R', 17:'S', 18:'T', 
-              19:'U', 20:'V', 21:'W', 22:'X', 23:'Y'}
+              12:'N', 13:'O', 14:'P', 15:'Q', 16:'R', 17:'S', 18:'T', 19:'U', 20:'V', 21:'W', 
+              22:'X', 23:'Y'}
 while True:
     _, frame = cap.read()
 
@@ -61,7 +61,7 @@ while True:
                 x_min -= 20
                 x_max += 20 
 
-        #analysisframe = cv2.cvtColor(analysisframe, cv2.COLOR_BGR2GRAY)
+        
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
         
         
@@ -77,6 +77,7 @@ while True:
                 print('Sign Detected: Tijeras')
         
         else:
+            analysisframe = cv2.cvtColor(analysisframe, cv2.COLOR_BGR2GRAY)
             analysisframe = cv2.resize(analysisframe,(28,28))
             preds = model.predict(np.array([analysisframe]))
             preds = np.argmax(preds, axis=1)
